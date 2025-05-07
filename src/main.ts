@@ -101,7 +101,7 @@ export default class CustomSortPlugin
 	sortSpecCache?: SortSpecsCollection | null
 	customSortAppliedAtLeastOnce: boolean = false
 
-	uninstallerOfFolderSortFunctionWrapper: MonkeyAroundUninstaller|undefined = undefined
+	uninstallerOfFileExplorerPatch: MonkeyAroundUninstaller|undefined = undefined
 
 	showNotice(message: string, timeout?: number) {
 		if (this.settings.notificationsEnabled || (Platform.isMobile && this.settings.mobileNotificationsEnabled)) {
@@ -238,7 +238,7 @@ export default class CustomSortPlugin
 		// That's why not showing and not logging error message here
 		if (patchableFileExplorer) {
 			this.uninstallFileExplorerPatchIfInstalled()
-			this.uninstallerOfFolderSortFunctionWrapper = around(patchableFileExplorer.view.constructor.prototype, {
+			this.uninstallerOfFileExplorerPatch = around(patchableFileExplorer.view.constructor.prototype, {
 				getSortedFolderItems(old: any) {
 					return function (...args: any[]) {
 						// quick check for plugin status
@@ -371,7 +371,7 @@ export default class CustomSortPlugin
 
 		this.registerCommands()
 
-		this.registerUninstallerHandler()
+		this.registerPluginUnloadHandler()
 
 		this.initialize();
 	}
@@ -571,30 +571,28 @@ export default class CustomSortPlugin
 	}
 
 	uninstallFileExplorerPatchIfInstalled() {
-		if (this.uninstallerOfFolderSortFunctionWrapper) {
+		if (this.uninstallerOfFileExplorerPatch) {
 			try {
-				this.uninstallerOfFolderSortFunctionWrapper()
+				this.uninstallerOfFileExplorerPatch()
 			} catch {
 
 			}
-			this.uninstallerOfFolderSortFunctionWrapper = undefined
+			this.uninstallerOfFileExplorerPatch = undefined
 		}
 	}
 
-	registerUninstallerHandler() {
+	registerPluginUnloadHandler() {
 		let plugin = this;
-		const requestStandardObsidianSortAfterFileExplorerPatchUninstaller = () => {
-			return () => {
- 				plugin.uninstallFileExplorerPatchIfInstalled()
 
-				const fileExplorerOrError= this.checkFileExplorerIsAvailableAndPatchable()
-				if (fileExplorerOrError.v && fileExplorerOrError.v.view) {
-					fileExplorerOrError.v.view.requestSort?.()
-				}
+		this.register(() => {
+			plugin.uninstallFileExplorerPatchIfInstalled()
+
+			// Request standard File Explorer sorting to remove any custom sorting cached by File Explorer
+			const fileExplorerOrError= plugin.checkFileExplorerIsAvailableAndPatchable()
+			if (fileExplorerOrError.v && fileExplorerOrError.v.view) {
+				fileExplorerOrError.v.view.requestSort?.()
 			}
-		}
-
-		this.register(requestStandardObsidianSortAfterFileExplorerPatchUninstaller())
+		})
 	}
 
 	registerCommands() {
