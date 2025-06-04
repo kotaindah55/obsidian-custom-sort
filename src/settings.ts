@@ -17,8 +17,8 @@ export interface CustomSortPluginSettings {
 }
 
 const MILIS = 1000
-const DEFAULT_DELAY_SECONDS = 0
-const DELAY_MIN_SECONDS = 1
+const DEFAULT_DELAY_SECONDS = 1
+const DELAY_MIN_SECONDS = 0
 const DELAY_MAX_SECONDS = 30
 const DEFAULT_DELAY = DEFAULT_DELAY_SECONDS * MILIS
 
@@ -78,8 +78,8 @@ export class CustomSortSettingTab extends PluginSettingTab {
             .addText(text => text
                 .setValue(`${this.plugin.settings.delayForInitialApplication/MILIS}`)
                 .onChange(async (value) => {
-                    let delayS = parseInt(value, 10)
-                    delayS = Number.isNaN(delayS) ? DEFAULT_DELAY_SECONDS : (delayS < DELAY_MIN_SECONDS ? DELAY_MIN_SECONDS :(delayS > DELAY_MAX_SECONDS ? DELAY_MAX_SECONDS : delayS))
+                    let delayS = parseFloat(value)
+                    delayS = (Number.isNaN(delayS) || !Number.isFinite((delayS))) ? DEFAULT_DELAY_SECONDS : (delayS < DELAY_MIN_SECONDS ? DELAY_MIN_SECONDS :(delayS > DELAY_MAX_SECONDS ? DELAY_MAX_SECONDS : delayS))
                     delayS = Math.round(delayS*10) / 10  // allow values like 0.2
                     this.plugin.settings.delayForInitialApplication = delayS * MILIS
                     await this.plugin.saveSettings()
