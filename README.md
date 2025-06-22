@@ -240,3 +240,5 @@ At the same time I'm mentioning it here because it is a side effect of a discuss
 We were considering a direct support of the Separators in the plugin. Eventually this boiled down to a very
 concise and smart CSS-snippet based solution, independent of the plugin. Go, see, copy to the CSS-snippets in Obsidian
 and enjoy the more grouped look
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-%23FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/SebastianMC)
