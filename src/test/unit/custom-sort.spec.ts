@@ -2621,7 +2621,7 @@ describe('CustomSortOrder.byMetadataFieldAlphabeticalReverse', () => {
 	})
 })
 
-describe('sorterByMetadataField', () => {
+describe('sorterByMetadataField - string metadata', () => {
 	it.each([
 		[true,'abc','def',-1, 'a', 'a'],
 		[true,'xyz','klm',1, 'b', 'b'],
@@ -2654,6 +2654,51 @@ describe('sorterByMetadataField', () => {
 		// then
 		expect(result).toBe(order)
 	})
+})
+
+describe('sorterByMetadataField - boolean metadata', () => {
+	const ASC = true
+	const DESC = false
+	it.each([
+		[ASC,true,false,1, 'a', 'a'],
+		[ASC,false,true,-1, 'a', 'a'],
+		[DESC,true,false,-1, 'a', 'a'],
+		[DESC,false,true,1, 'a', 'a'],
+		[ASC,true,undefined,-1, 'a', 'a'],
+		[ASC,false,undefined,-1, 'a', 'a'],
+		[DESC,true,undefined,-1, 'a', 'a'],
+		[DESC,false,undefined,-1, 'a', 'a'],
+		[ASC,undefined,true,1, 'a', 'a'],
+		[ASC,undefined,false,1, 'a', 'a'],
+		[DESC,undefined,true,1, 'a', 'a'],
+		[DESC,undefined,false,1, 'a', 'a'],
+		[ASC,true,true,EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[ASC,false,false,EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[DESC,true,true,EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[DESC,false,false,EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[ASC,true,'false',1, 'a', 'a'],
+		[ASC,'false',true,-1, 'a', 'a'],
+		[DESC,true,'false',-1, 'a', 'a'],
+		[DESC,'false',true,1, 'a', 'a'],
+		[ASC,'true',false,1, 'a', 'a'],
+		[ASC,false,'true',-1, 'a', 'a'],
+		[DESC,'true',false,-1, 'a', 'a'],
+		[DESC,false,'true',1, 'a', 'a'],
+		[ASC,true,'true',EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[ASC,'false',false,EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[DESC,'true',true,EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+		[DESC,false,'false',EQUAL_OR_UNCOMPARABLE, 'a', 'b'],
+
+	])('straight order %s, comparing %s and %s should return %s for sortStrings %s and %s',
+		(straight: boolean, metadataA: boolean|string|undefined, metadataB: boolean|string|undefined, order: number, sortStringA: string, sortStringB) => {
+			const sorterFn = sorterByMetadataField(!straight, false)
+			const itemA: Partial<FolderItemForSorting> = {metadataFieldValue: metadataA as any, sortString: sortStringA}
+			const itemB: Partial<FolderItemForSorting> = {metadataFieldValue: metadataB as any, sortString: sortStringB}
+			const result = sorterFn(itemA as FolderItemForSorting, itemB as FolderItemForSorting)
+
+			// then
+			expect(result).toBe(order)
+		})
 })
 
 describe('sorterByBookmarkOrder', () => {

@@ -105,13 +105,13 @@ export const sorterByMetadataField = (reverseOrder?: boolean, trueAlphabetical?:
 		if (reverseOrder) {
 			[amdata, bmdata] = [bmdata, amdata]
 		}
-		if (amdata && bmdata) {
+		if (amdata!==undefined && bmdata!==undefined) {
 			const sortResult: number = collatorCompareFn(amdata, bmdata)
 			return sortResult
 		}
 		// Item with metadata goes before the w/o metadata
-		if (amdata) return reverseOrder ? 1 : -1
-		if (bmdata) return reverseOrder ? -1 : 1
+		if (amdata!==undefined) return reverseOrder ? 1 : -1
+		if (bmdata!==undefined) return reverseOrder ? -1 : 1
 
 		return EQUAL_OR_UNCOMPARABLE
 	}
