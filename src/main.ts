@@ -683,6 +683,8 @@ export default class CustomSortPlugin
 	}
 
 	onunload() {
+		// Trigger "plugin-unload" event
+		this.app.workspace.trigger('custom-sort:plugin-unload');
 	}
 
 	onUserEnable() {
