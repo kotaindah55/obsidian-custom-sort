@@ -1,4 +1,4 @@
-import { App, Component, Plugin, View, WorkspaceLeaf } from 'obsidian';
+import { App, Component, View, WorkspaceLeaf } from 'obsidian';
 
 export class UndeferHandler extends Component {
     app: App;
@@ -8,7 +8,7 @@ export class UndeferHandler extends Component {
 
     constructor(leaf: WorkspaceLeaf, callback: (leaf: WorkspaceLeaf) => unknown) {
         super();
-        this.app = leaf.app;
+        this.app = leaf.view.app;
         this.leaf = leaf;
         this.view = leaf.view;
         this.callback = callback;
@@ -24,7 +24,7 @@ export class UndeferHandler extends Component {
         }
 
         // Detach the handler once the plugin has been disabled/unistalled
-        this.registerEvent(this.app.workspace.on(`custom-sort:plugin-unload`, () => this.detach()));
+        this.registerEvent(this.app.workspace.on('custom-sort:plugin-unload', () => this.detach()));
     }
 
     onunload(): void {
