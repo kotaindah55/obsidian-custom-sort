@@ -284,14 +284,6 @@ export default class CustomSortPlugin
 						const sortingData = plugin.determineAndPrepareSortingDataForFolder(folder)
 
 						if (sortingData.sortSpec) {
-							if (!plugin.customSortAppliedAtLeastOnce) {
-								plugin.customSortAppliedAtLeastOnce = true
-								setTimeout(() => {
-									plugin.setRibbonIconToEnabled.apply(plugin)
-									plugin.showNotice('Custom sort APPLIED.');
-									plugin.updateStatusBar()
-								})
-							}
 							return getSortedFolderItems.call(this, folder, sortingData.sortSpec, plugin.createProcessingContextForSorting(sortingData.sortingAndGroupingStats))
 						} else {
 							return old.call(this, ...args);
@@ -346,6 +338,8 @@ export default class CustomSortPlugin
 					this.customSortAppliedAtLeastOnce = false
 					fileExplorer.view.requestSort();
 				}
+				this.setRibbonIconToEnabled()
+				this.showNotice('Custom sort APPLIED.')
 			} else {
 				setIcon(this.ribbonIconEl, ICON_SORT_SUSPENDED_SYNTAX_ERROR)
 				this.settings.suspended = true
@@ -713,7 +707,7 @@ export default class CustomSortPlugin
 
 	updateStatusBar() {
 		if (this.statusBarItemEl) {
-			let status = (!this.settings.suspended && this.customSortAppliedAtLeastOnce) ? 'ON' : 'OFF'
+			let status = !this.settings.suspended ? 'ON' : 'OFF'
 			this.statusBarItemEl.setText(`Custom sort:${status}`)
 		}
 	}
