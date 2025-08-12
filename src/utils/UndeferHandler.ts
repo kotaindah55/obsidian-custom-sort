@@ -5,13 +5,16 @@ export class UndeferHandler extends Component {
     leaf: WorkspaceLeaf;
     view: View;
     callback?: (leaf: WorkspaceLeaf) => unknown;
+    // Called when the deferred leaf is detached before being fully loaded
+    onLeafDetach?: () => unknown;
 
-    constructor(leaf: WorkspaceLeaf, callback: (leaf: WorkspaceLeaf) => unknown) {
+    constructor(leaf: WorkspaceLeaf, callback: (leaf: WorkspaceLeaf) => unknown, onLeafDetach?: () => unknown) {
         super();
         this.app = leaf.view.app;
         this.leaf = leaf;
         this.view = leaf.view;
         this.callback = callback;
+        this.onLeafDetach = onLeafDetach;
 
         this.view.addChild(this);
     }
@@ -48,6 +51,8 @@ export class UndeferHandler extends Component {
             this.leaf.view.getViewType() !== 'empty'
         ) {
             this.callback?.(this.leaf);
+        } else {
+            this.onLeafDetach?.();
         }
     }
 }
